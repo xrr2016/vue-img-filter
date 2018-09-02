@@ -4,16 +4,18 @@
     <span>IMG FILTER</span>
     <a class="link" href="https://github.com/xrr2016/vue-img-filter" target="_blank"><a-icon type="github" /></a>
   </a-layout-header>
-  <a-layout-content class="conntent">
-    <a-col :span="12">
+  <a-layout-content class="content">
+    <a-col :span="11" class="content-left">
       <div class="spin-container" v-if="isLoadingImg">
         <a-spin>
           <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
         </a-spin>
       </div>
+
       <div class="img-holder">
-        <img v-show="!isLoadingImg" class="filter-image" ref="img" :style="{ filter: `blur(${filter.blur}px) brightness(${filter.brightness}) contrast(${filter.contrast}%) grayscale(${filter.grayscale}%) hue-rotate(${filter.hueRotate}deg) invert(${filter.invert}%) opacity(${filter.opacity}%) saturate(${filter.saturate}%) sepia(${filter.sepia}%) drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`}">
+        <img  class="filter-image" ref="img" :style="{ filter: `blur(${filter.blur}px) brightness(${filter.brightness}) contrast(${filter.contrast}%) grayscale(${filter.grayscale}%) hue-rotate(${filter.hueRotate}deg) invert(${filter.invert}%) opacity(${filter.opacity}%) saturate(${filter.saturate}%) sepia(${filter.sepia}%) drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`}">
       </div>
+
       <a-textarea class="filter-text" :rows="4" :value="filterStr" />
       <a-col :span="24" class="filter-buttons">
         <a-button-group>
@@ -146,6 +148,7 @@ export default {
   },
   data() {
     return {
+      quality: 1,
       isLoadingImg: false,
       imgName: '',
       filter: {
@@ -186,7 +189,6 @@ export default {
       const filterImg = this.$refs.img
       const input = document.createElement('input')
       input.type = 'file'
-      input.name = 'img'
       input.multiple = false
       input.accept = '.png, .jpg, .jpeg'
       input.addEventListener('abort', () => (this.isLoadingImg = false))
@@ -233,16 +235,37 @@ export default {
       if (!this.imgName) {
         return
       }
-      const filterImg = this.$refs.img
 
+      const maxWidth = 1080
+      const maxHeight = 960
+
+      let targetWidth = 0
+      let targetHeight = 0
+
+      const filterImg = this.$refs.img
+      const { naturalWidth, naturalHeight } = filterImg
       const canvas = document.createElement('canvas')
-      canvas.width = filterImg.naturalWidth
-      canvas.height = filterImg.naturalHeight
+
+      if (naturalWidth >= maxWidth || naturalHeight >= maxHeight) {
+        if (naturalWidth / naturalHeight > maxWidth / maxHeight) {
+          targetWidth = maxWidth
+          targetHeight = Math.round(maxWidth * (naturalHeight / naturalWidth))
+        } else {
+          targetHeight = maxHeight
+          targetWidth = Math.round(maxHeight * (naturalWidth / naturalHeight))
+        }
+      }
+
+      canvas.width = targetWidth
+      canvas.height = targetHeight
+
       const ctx = canvas.getContext('2d')
-      const filterStr = `
-        blur(${this.filter.blur}px) brightness(${this.filter.brightness}) contrast(${
-        this.filter.contrast
-      }%) grayscale(${this.filter.grayscale}%) hue-rotate(${this.filter.hueRotate}deg) 
+
+      const filterStr = `blur(${this.filter.blur}px) brightness(${
+        this.filter.brightness
+      }) contrast(${this.filter.contrast}%) grayscale(${this.filter.grayscale}%) hue-rotate(${
+        this.filter.hueRotate
+      }deg) 
       invert(${this.filter.invert}%) opacity(${this.filter.opacity}%) saturate(${
         this.filter.saturate
       }%) sepia(${this.filter.sepia}%) drop-shadow(${this.filter.offsetX}px ${
@@ -253,8 +276,7 @@ export default {
       ctx.drawImage(this.$refs.img, 0, 0, canvas.width, canvas.height)
 
       const link = document.createElement('a')
-      link.href = canvas.toDataURL()
-      console.log(link)
+      link.href = canvas.toDataURL('', this.quality)
       link.download = this.imgName
       link.click()
     }
@@ -275,23 +297,28 @@ export default {
   color: #fff;
 }
 
-.conntent {
+.content {
+  min-height: calc(100vh - 40px);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
 }
 
 .spin-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 480px;
+  height: 400px;
+  background-color: rgba(0, 0, 0, 0.15);
 }
 
 .img-holder {
   width: 100%;
-  min-height: 480px;
+  min-height: 400px;
   border: 1px solid #eee;
   line-height: 0;
   margin: 24px;
@@ -302,6 +329,7 @@ export default {
 .filter-image {
   width: 100%;
   max-height: 640px;
+  border-radius: 4px;
   border: none;
 }
 
@@ -323,7 +351,7 @@ export default {
 }
 
 .ant-form-item {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .m-r-12px {
