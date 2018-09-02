@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "yarn build && mv ./CNAME ./dist && cd ./dist && surge"
   },
   "dependencies": {
     "ant-design-vue": "^1.0.3",

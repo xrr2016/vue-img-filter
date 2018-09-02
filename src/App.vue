@@ -2,7 +2,7 @@
 <a-layout>
   <a-layout-header class="header">
     <span>IMG FILTER</span>
-    <a class="link" href="https://xrr2016.github.io" target="_blank"><a-icon type="github" /></a>
+    <a class="link" href="https://github.com/xrr2016/vue-img-filter" target="_blank"><a-icon type="github" /></a>
   </a-layout-header>
   <a-layout-content class="conntent">
     <a-col :span="12">
@@ -170,13 +170,13 @@ export default {
     filterStr() {
       return `.filter-image { 
         filter: blur(${this.filter.blur}px) brightness(${this.filter.brightness}) contrast(${
-  this.filter.contrast
-}%) grayscale(${this.filter.grayscale}%) hue-rotate(${this.filter.hueRotate}deg) 
+        this.filter.contrast
+      }%) grayscale(${this.filter.grayscale}%) hue-rotate(${this.filter.hueRotate}deg) 
       invert(${this.filter.invert}%) opacity(${this.filter.opacity}%) saturate(${
-  this.filter.saturate
-}%) sepia(${this.filter.sepia}%) drop-shadow(${this.filter.offsetX}px ${
-  this.filter.offsetY
-}px ${this.filter.blurRadius}px ${this.filter.color}); 
+        this.filter.saturate
+      }%) sepia(${this.filter.sepia}%) drop-shadow(${this.filter.offsetX}px ${
+        this.filter.offsetY
+      }px ${this.filter.blurRadius}px ${this.filter.color}); 
     }`
     }
   },
@@ -230,6 +230,9 @@ export default {
       }
     },
     download() {
+      if (!this.imgName) {
+        return
+      }
       const filterImg = this.$refs.img
 
       const canvas = document.createElement('canvas')
@@ -238,13 +241,13 @@ export default {
       const ctx = canvas.getContext('2d')
       const filterStr = `
         blur(${this.filter.blur}px) brightness(${this.filter.brightness}) contrast(${
-  this.filter.contrast
-}%) grayscale(${this.filter.grayscale}%) hue-rotate(${this.filter.hueRotate}deg) 
+        this.filter.contrast
+      }%) grayscale(${this.filter.grayscale}%) hue-rotate(${this.filter.hueRotate}deg) 
       invert(${this.filter.invert}%) opacity(${this.filter.opacity}%) saturate(${
-  this.filter.saturate
-}%) sepia(${this.filter.sepia}%) drop-shadow(${this.filter.offsetX}px ${
-  this.filter.offsetY
-}px ${this.filter.blurRadius}px ${this.filter.color})
+        this.filter.saturate
+      }%) sepia(${this.filter.sepia}%) drop-shadow(${this.filter.offsetX}px ${
+        this.filter.offsetY
+      }px ${this.filter.blurRadius}px ${this.filter.color})
     `
       ctx.filter = filterStr.trim()
       ctx.drawImage(this.$refs.img, 0, 0, canvas.width, canvas.height)
